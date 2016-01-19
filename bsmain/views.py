@@ -1,22 +1,22 @@
 # -*-coding:utf-8 -*-
 # coding=UTF-8
 
-from django.shortcuts import render
-
 # Create your views here.
 # bsmain/views.py
 
 
-from django.contrib.auth.decorators import login_required
+import firebase
 from django.contrib import messages
-from django.shortcuts import render, render_to_response
-from django.http import HttpResponseRedirect
-from django.template import RequestContext
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, render_to_response
+from django.template import RequestContext
+
+import mail
+import orm
 from bsmain.forms import MbeanForm, OrderForm, UserCreateForm
 from bsmain.models import Mbean
-import orm
-import mail
 
 
 # User Implement
@@ -25,6 +25,11 @@ def user(request):
     orders = orm.get_order_from_user(request.user)
 
     return render_to_response('users/manual.html',
+                              RequestContext(request, locals()))
+
+
+def home(request):
+    return render_to_response('index.html',
                               RequestContext(request, locals()))
 
 
@@ -208,3 +213,9 @@ def test(request):
     messages.error(request, "Error")
     return render_to_response('test.html', RequestContext(request, locals()))
 
+
+def testFirebase(request):
+    firebaseApp = firebase.FirebaseApplication('https://dealcoffee.firebaseio.com', None)
+    result = firebaseApp.get('/test', None)
+    print result
+    return render_to_response('test.html', RequestContext(request, locals()))
